@@ -13,6 +13,7 @@ jobs:
       matrix:
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
         ruby:
+          - truffleruby-head
           - head
           - '3.0'
           - '2.7'
