@@ -164,9 +164,9 @@ dump_array(VALUE a, int depth, Out out, bool as_ok) {
 	} else {
 	    size = d2 * out->indent + 2;
 	}
+	assure_size(out, size * cnt);
 	cnt--;
 	for (i = 0; i <= cnt; i++) {
-	    assure_size(out, size);
 	    if (out->opts->dump_opts.use) {
 		if (0 < out->opts->dump_opts.array_size) {
 		    strcpy(out->cur, out->opts->dump_opts.array_nl);
@@ -476,12 +476,12 @@ time_alt(VALUE obj, int depth, Out out) {
 	sec = (long long)ts.tv_sec;
 	nsec = ts.tv_nsec;
     } else {
-	sec = rb_num2ll(rb_funcall2(obj, oj_tv_sec_id, 0, 0));
-	nsec = rb_num2ll(rb_funcall2(obj, oj_tv_nsec_id, 0, 0));
+	sec = NUM2LL(rb_funcall2(obj, oj_tv_sec_id, 0, 0));
+	nsec = NUM2LL(rb_funcall2(obj, oj_tv_nsec_id, 0, 0));
     }
 #else
-    sec = rb_num2ll(rb_funcall2(obj, oj_tv_sec_id, 0, 0));
-    nsec = rb_num2ll(rb_funcall2(obj, oj_tv_nsec_id, 0, 0));
+    sec = NUM2LL(rb_funcall2(obj, oj_tv_sec_id, 0, 0));
+    nsec = NUM2LL(rb_funcall2(obj, oj_tv_nsec_id, 0, 0));
 #endif
 
     attrs[0].num = sec;
@@ -613,18 +613,21 @@ dump_float(VALUE obj, int depth, Out out, bool as_ok) {
     } else if (OJ_INFINITY == d) {
 	if (WordNan == out->opts->dump_opts.nan_dump) {
 	    strcpy(buf, "Infinity");
+	    cnt = 8;
 	} else {
 	    raise_json_err("Infinity not allowed in JSON.", "GeneratorError");
 	}
     } else if (-OJ_INFINITY == d) {
 	if (WordNan == out->opts->dump_opts.nan_dump) {
 	    strcpy(buf, "-Infinity");
+	    cnt = 9;
 	} else {
 	    raise_json_err("-Infinity not allowed in JSON.", "GeneratorError");
 	}
     } else if (isnan(d)) {
 	if (WordNan == out->opts->dump_opts.nan_dump) {
 	    strcpy(buf, "NaN");
+	    cnt = 3;
 	} else {
 	    raise_json_err("NaN not allowed in JSON.", "GeneratorError");
 	}
@@ -639,9 +642,8 @@ dump_float(VALUE obj, int depth, Out out, bool as_ok) {
 	cnt = (int)RSTRING_LEN(rstr);
     }
     assure_size(out, cnt);
-    for (b = buf; '\0' != *b; b++) {
-	*out->cur++ = *b;
-    }
+    memcpy(out->cur, buf, cnt);
+    out->cur += cnt;
     *out->cur = '\0';
 }
 

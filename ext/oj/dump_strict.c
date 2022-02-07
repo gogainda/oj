@@ -105,9 +105,8 @@ static void dump_float(VALUE obj, int depth, Out out, bool as_ok) {
         }
     }
     assure_size(out, cnt);
-    for (b = buf; '\0' != *b; b++) {
-        *out->cur++ = *b;
-    }
+    memcpy(out->cur, buf, cnt);
+    out->cur += cnt;
     *out->cur = '\0';
 }
 
@@ -134,9 +133,9 @@ static void dump_array(VALUE a, int depth, Out out, bool as_ok) {
         } else {
             size = d2 * out->indent + 2;
         }
+        assure_size(out, size * cnt);
         cnt--;
         for (i = 0; i <= cnt; i++) {
-            assure_size(out, size);
             if (out->opts->dump_opts.use) {
                 if (0 < out->opts->dump_opts.array_size) {
                     strcpy(out->cur, out->opts->dump_opts.array_nl);
