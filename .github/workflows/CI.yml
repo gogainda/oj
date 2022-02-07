@@ -16,13 +16,8 @@ jobs:
           - truffleruby-head
           - head
           - '3.1'
-          - '3.0'
-          - '2.7'
-          - '2.6'
-          - '2.5'
         os:
           - ubuntu
-          - macos
           #- windows Tests are failing with Windows for now.
         gemfile:
           - no_rails
