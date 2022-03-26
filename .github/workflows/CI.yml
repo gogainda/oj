@@ -21,9 +21,7 @@ jobs:
           #- windows Tests are failing with Windows for now.
         gemfile:
           - no_rails
-          - rails_5
           - rails_6
-          - rails_6.1
           - rails_7
         exclude:
           - os: macos
